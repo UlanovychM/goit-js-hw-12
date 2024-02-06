@@ -4,27 +4,35 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+import axios from 'axios';
+
 const form = document.querySelector('form');
 const gallery = document.querySelector('.gallery');
 const spinner = document.querySelector('.loader');
+const fetchBtn = document.querySelector('.loadBtn');
+
+let page = 1;
+let perPage = 15;
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 
-const optionsAPI = {
+const paramsAPI = {
   key: '42045393-d503a5a54b8da83761f9aabf4',
   q: '',
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
+  page: page,
+  per_page: perPage,
 };
 
 function renderGalleryImg(arr) {
   const markup = arr
-    .map(img => {
-      const {
+    .map(
+      ({
         webformatURL,
         largeImageURL,
         tags,
@@ -32,9 +40,8 @@ function renderGalleryImg(arr) {
         views,
         comments,
         downloads,
-      } = img;
-
-      return `<li class="gallery-item">
+      }) => {
+        return `<li class="gallery-item">
   <a class="gallery-link" href="${largeImageURL}">
     <img
       class="gallery-image"
@@ -62,7 +69,8 @@ function renderGalleryImg(arr) {
   </ul> 
 	
 </li>`;
-    })
+      }
+    )
     .join('');
 
   gallery.insertAdjacentHTML('afterbegin', markup);
@@ -73,20 +81,21 @@ function renderGalleryImg(arr) {
 }
 
 function getAPIDataValueStr(str) {
-  optionsAPI.q = str.replace(/\\s+/g, '+');
+  paramsAPI.q = str.replace(/\\s+/g, '+');
 
-  const searchParams = new URLSearchParams(optionsAPI);
+  const searchParams = new URLSearchParams(paramsAPI);
 
-  fetch(`https://pixabay.com/api/?${searchParams}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.status);
-      }
-      return response.json();
-    })
+  const fetchImages = async () => {
+    const response = await axios.get(`https://pixabay.com/api?${searchParams}`);
+
+    return response.data;
+  };
+
+  fetchImages()
     .then(img => {
       spinner.style.display = 'none';
       gallery.innerHTML = '';
+      loadBtn.style.display = 'block';
       if (img.hits.length !== 0) {
         renderGalleryImg(img.hits);
       } else {

@@ -55,8 +55,6 @@ body {
   gap: 24px;
 }
 
-
-
 /* Img */
 
 .gallery-image {
@@ -109,8 +107,20 @@ body {
   height: 40px;
   width: 91px;
   padding: 8px 16px;
-  justify-content: center;
-  align-items: center;
+
+  border-radius: 8px;
+  background: #4e75ff;
+  color: #fff;
+  border: none;
+}
+
+.loadBtn {
+  display: none;
+  position: absolute;
+  width: 125px;
+  height: 40px;
+  padding: 8px 16px;
+  left: 35%;
   border-radius: 8px;
   background: #4e75ff;
   color: #fff;
