@@ -95,8 +95,8 @@ function getAPIDataValueStr(str) {
     .then(img => {
       spinner.style.display = 'none';
       gallery.innerHTML = '';
-      loadBtn.style.display = 'block';
-      fetchBtn.addEventListener();
+      fetchBtn.style.display = 'block';
+      // fetchBtn.addEventListener();
       if (img.hits.length !== 0) {
         renderGalleryImg(img.hits);
       } else {
