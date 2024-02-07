@@ -88,7 +88,6 @@ function getFormValueStr(str) {
 
   fetchImages()
     .then(img => {
-      gallery.innerHTML = '';
       spinnerToggleShow();
       fetchBtn.style.display = 'block';
 
@@ -136,6 +135,9 @@ fetchBtn.addEventListener('click', async () => {
 form.addEventListener('submit', e => {
   e.preventDefault();
 
+  clearSearchElements();
+  fetchBtn.style.display = 'none';
+
   if (e.target.elements.search.value !== '') {
     spinnerToggleShow();
 
@@ -152,4 +154,9 @@ async function fetchImages() {
 
 function spinnerToggleShow() {
   spinner.classList.toggle('loader_show');
+}
+
+function clearSearchElements() {
+  gallery.innerHTML = '';
+  page = 1;
 }
