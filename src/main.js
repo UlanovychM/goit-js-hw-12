@@ -12,7 +12,8 @@ const spinner = document.querySelector('.loader');
 const fetchBtn = document.querySelector('.loadBtn');
 
 let page = 1;
-let perPage = 15;
+let limit = 15;
+const totalPages = Math.ceil(500 / limit);
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -26,7 +27,7 @@ const paramsAPI = {
   orientation: 'horizontal',
   safesearch: true,
   page: page,
-  per_page: perPage,
+  per_page: limit,
 };
 
 function renderGalleryImg(arr) {
@@ -73,30 +74,24 @@ function renderGalleryImg(arr) {
     )
     .join('');
 
-  gallery.insertAdjacentHTML('afterbegin', markup);
+  gallery.insertAdjacentHTML('beforeend', markup);
   document.querySelector('.gallery-link').addEventListener('click', e => {
     e.preventDefault();
   });
+
+  console.log(document.querySelector('.gallery-item').getBoundingClientRect());
   lightbox.refresh();
 }
 
-function getAPIDataValueStr(str) {
+function getFormValueStr(str) {
   paramsAPI.q = str.replace(/\\s+/g, '+');
-
-  const searchParams = new URLSearchParams(paramsAPI);
-
-  const fetchImages = async () => {
-    const response = await axios.get(`https://pixabay.com/api?${searchParams}`);
-
-    return response.data;
-  };
 
   fetchImages()
     .then(img => {
-      spinner.style.display = 'none';
       gallery.innerHTML = '';
+      spinnerToggleShow();
       fetchBtn.style.display = 'block';
-      // fetchBtn.addEventListener();
+
       if (img.hits.length !== 0) {
         renderGalleryImg(img.hits);
       } else {
@@ -110,12 +105,51 @@ function getAPIDataValueStr(str) {
     .catch(error => console.log('Error:', error));
 }
 
+fetchBtn.addEventListener('click', async () => {
+  spinnerToggleShow();
+  if (paramsAPI.page > totalPages) {
+    fetchBtn.style.display = 'none';
+    return iziToast.info({
+      position: 'topRight',
+      message: "We're sorry, but you've reached the end of search results.",
+    });
+  }
+
+  page += 1;
+  paramsAPI.page = page;
+
+  console.log(paramsAPI.page);
+
+  await fetchImages()
+    .then(img => {
+      spinnerToggleShow();
+      renderGalleryImg(img.hits);
+      window.scrollBy({
+        left: 0,
+        top: 515,
+        behavior: 'smooth',
+      });
+    })
+    .catch(error => console.log('Error:', error));
+});
+
 form.addEventListener('submit', e => {
   e.preventDefault();
 
   if (e.target.elements.search.value !== '') {
-    spinner.style.display = 'inline-block';
+    spinnerToggleShow();
 
-    getAPIDataValueStr(e.target.elements.search.value);
+    getFormValueStr(e.target.elements.search.value);
   }
 });
+
+async function fetchImages() {
+  const searchParams = new URLSearchParams(paramsAPI);
+  const response = await axios.get(`https://pixabay.com/api?${searchParams}`);
+
+  return response.data;
+}
+
+function spinnerToggleShow() {
+  spinner.classList.toggle('loader_show');
+}
