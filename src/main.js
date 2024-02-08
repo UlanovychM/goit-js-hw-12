@@ -11,7 +11,6 @@ const gallery = document.querySelector('.gallery');
 const spinner = document.querySelector('.loader');
 const fetchBtn = document.querySelector('.loadBtn');
 
-let page = 1;
 let limit = 15;
 
 const lightbox = new SimpleLightbox('.gallery a', {
@@ -107,8 +106,7 @@ function getFormValueStr(str) {
 fetchBtn.addEventListener('click', async () => {
   spinnerToggleShow();
 
-  page += 1;
-  paramsAPI.page = page;
+  paramsAPI.page += 1;
 
   await fetchImages()
     .then(img => {
