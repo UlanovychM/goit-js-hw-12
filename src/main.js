@@ -132,7 +132,7 @@ fetchBtn.addEventListener('click', async () => {
 
 form.addEventListener('submit', e => {
   e.preventDefault();
-
+  clearSearchElements();
   fetchBtn.style.display = 'none';
 
   if (e.target.elements.search.value !== '') {
@@ -140,7 +140,6 @@ form.addEventListener('submit', e => {
 
     getFormValueStr(e.target.elements.search.value);
   }
-  clearSearchElements();
 });
 
 async function fetchImages() {
@@ -156,5 +155,5 @@ function spinnerToggleShow() {
 
 function clearSearchElements() {
   gallery.innerHTML = '';
-  page = 1;
+  paramsAPI.page = 1;
 }
