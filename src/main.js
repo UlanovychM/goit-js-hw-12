@@ -13,7 +13,6 @@ const fetchBtn = document.querySelector('.loadBtn');
 
 let page = 1;
 let limit = 15;
-const totalPages = Math.ceil(500 / limit);
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -79,7 +78,6 @@ function renderGalleryImg(arr) {
     e.preventDefault();
   });
 
-  console.log(document.querySelector('.gallery-item').getBoundingClientRect());
   lightbox.refresh();
 }
 
@@ -89,6 +87,7 @@ function getFormValueStr(str) {
   fetchImages()
     .then(img => {
       spinnerToggleShow();
+
       fetchBtn.style.display = 'block';
 
       if (img.hits.length !== 0) {
@@ -99,6 +98,7 @@ function getFormValueStr(str) {
           message:
             'Sorry, there are no images matching your search query. Please try again!',
         });
+        fetchBtn.style.display = 'none';
       }
     })
     .catch(error => console.log('Error:', error));
@@ -106,23 +106,21 @@ function getFormValueStr(str) {
 
 fetchBtn.addEventListener('click', async () => {
   spinnerToggleShow();
-  if (paramsAPI.page > totalPages) {
-    fetchBtn.style.display = 'none';
-    return iziToast.info({
-      position: 'topRight',
-      message: "We're sorry, but you've reached the end of search results.",
-    });
-  }
 
   page += 1;
   paramsAPI.page = page;
-
-  console.log(paramsAPI.page);
 
   await fetchImages()
     .then(img => {
       spinnerToggleShow();
       renderGalleryImg(img.hits);
+      if (img.totalHits < 500) {
+        fetchBtn.style.display = 'none';
+        return iziToast.info({
+          position: 'topRight',
+          message: "We're sorry, but you've reached the end of search results.",
+        });
+      }
       window.scrollBy({
         left: 0,
         top: 515,
@@ -135,7 +133,6 @@ fetchBtn.addEventListener('click', async () => {
 form.addEventListener('submit', e => {
   e.preventDefault();
 
-  clearSearchElements();
   fetchBtn.style.display = 'none';
 
   if (e.target.elements.search.value !== '') {
@@ -143,6 +140,7 @@ form.addEventListener('submit', e => {
 
     getFormValueStr(e.target.elements.search.value);
   }
+  clearSearchElements();
 });
 
 async function fetchImages() {
