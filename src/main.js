@@ -24,7 +24,7 @@ const paramsAPI = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: true,
-  page: page,
+  page: 1,
   per_page: limit,
 };
 
