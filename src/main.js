@@ -142,7 +142,7 @@ form.addEventListener('submit', e => {
 
 async function fetchImages() {
   const searchParams = new URLSearchParams(paramsAPI);
-  const response = await axios.get(`https://pixabay.com/api?${searchParams}`);
+  const response = await axios.get(`https://pixabay.com/api/?${searchParams}`);
 
   return response.data;
 }
